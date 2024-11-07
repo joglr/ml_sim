@@ -9,7 +9,7 @@ from math_utils import clamp, orthogonal_projection
 from robot import RobotPose
 from copy import deepcopy
 import cv2
-from constants import BEAM_LENGTH, DEOCCUPANCY_DELTA, GRID_SIZE, HEIGHT, IMG_PATH, NUM_PARTICLES, OCCUPANCY_DELTA, WIDTH, DRAW_PARTICLES, AXLE_LENGTH, WHEEL_RADIUS
+from constants import BEAM_LENGTH, DEOCCUPANCY_DELTA, GRID_SIZE, HEIGHT, IMG_PATH, MAX_WHEEL_SPEED, NUM_PARTICLES, OCCUPANCY_DELTA, V_MAX, WIDTH, DRAW_PARTICLES, AXLE_LENGTH, WHEEL_RADIUS
 
 class ParticleFilterLocalization:
     def __init__(self, motion_model_stddev, environment, landmarks):
@@ -205,11 +205,11 @@ class ParticleFilterLocalization:
         for i in range(len(self.particles)):
             particle = particles[i]
             # Assume maximum linear velocity at motor speed 500
-            v_max = 10  # pixels/second
+            v_max = V_MAX  # pixels/second
             # Calculate the linear velocity of each wheel
             left_motor_speed, right_motor_speed = motor_speeds
-            left_wheel_velocity = (left_motor_speed / 500) * v_max
-            right_wheel_velocity = (right_motor_speed / 500) * v_max
+            left_wheel_velocity = (left_motor_speed / MAX_WHEEL_SPEED) * v_max
+            right_wheel_velocity = (right_motor_speed / MAX_WHEEL_SPEED) * v_max
 
             v_x = math.cos(particle.theta) * (WHEEL_RADIUS * (left_wheel_velocity + right_wheel_velocity) / 2)
             v_y = math.sin(particle.theta) * (WHEEL_RADIUS * (left_wheel_velocity + right_wheel_velocity) / 2)

@@ -1,5 +1,8 @@
 """Constants file to keep all together"""
 
+# Max pixels per second
+V_MAX = 10
+MAX_WHEEL_SPEED = 500
 USE_VISUALIZATION = True
 DRAW_LIDAR = True
 DRAW_PARTICLES = True
@@ -8,7 +11,7 @@ DRAW_ROBOT = True
 WIDTH = 1200
 HEIGHT = 800
 
-BEAM_LENGTH = 500
+BEAM_LENGTH = 200
 NUM_BEAMS = 60
 
 AXLE_LENGTH = 10
