@@ -43,14 +43,18 @@ class GenerativeModel(nn.Module):
         fitness.backward()
         self.optimizer.step()
         self.itters += 1
-        return out * MAX_WHEEL_SPEED
+        return out
 
     def fitness_fun(self, out, lidar_scans):
         wheel_velocity = out
         left_wheel, right_wheel = wheel_velocity
 
-
-        λ = 1
-        fitness = λ * (left_wheel / MAX_WHEEL_SPEED) * (right_wheel / MAX_WHEEL_SPEED) + (np.sum(lidar_scans) / self.max_beam_sum)
+        print("left", left_wheel)
+        print("right", right_wheel)
+        λ = 1E-3
+        normalized_lidar_scans = (np.sum(lidar_scans) / self.max_beam_sum)
+        print("scans", normalized_lidar_scans)
+        fitness = λ * (left_wheel + 1E-10) * (right_wheel + 1E-10) + normalized_lidar_scans
+        print("fitness", fitness)
         return fitness
 
