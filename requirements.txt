@@ -1,3 +1,5 @@
 pygame
 torch
 numpy
+shapely
+matplotlib

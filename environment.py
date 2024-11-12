@@ -71,7 +71,7 @@ class Environment:
     def get_environment(self):
         return self.walls
     
-    def checkColision(self, pos):
+    def check_collision(self, pos):
         for line in self.walls:
             if line.distance(Point(pos.x, pos.y)) <= 5:
                 return True

@@ -62,7 +62,7 @@ if __name__ == "__main__":
          # Generate Lidar scans - for these exercises, you wil be given these.
         lidar_scans, _intersect_points = lidar.generate_scans(robot_pose, env.get_environment())
 
-        model.compile()
+        # model.compile()
         left_wheel, right_wheel = model.train(lidar_scans)
         left_wheel = left_wheel.item()
         right_wheel = right_wheel.item()
@@ -105,7 +105,7 @@ if __name__ == "__main__":
             if DRAW_ROBOT:
                 robot.draw(screen)
                # Update the display
-            collided = env.checkColision(robot_pose)
+            collided = env.check_collision(robot_pose)
             if collided:
                 # Draw the animation
                 boom_animation.draw(screen)
