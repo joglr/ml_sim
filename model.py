@@ -51,7 +51,7 @@ class GenerativeModel(nn.Module):
 
         print("left", left_wheel)
         print("right", right_wheel)
-        λ = 1E-3
+        λ = 1E-4
         normalized_lidar_scans = (np.sum(lidar_scans) / self.max_beam_sum)
         print("scans", normalized_lidar_scans)
         fitness = λ * (left_wheel + 1E-10) * (right_wheel + 1E-10) + normalized_lidar_scans
