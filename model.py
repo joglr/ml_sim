@@ -73,8 +73,12 @@ class GenerativeModel(nn.Module):
     """
     def mutate(self):
         random_weight_index = np.random.randint(0, len(list(self.get_parameters())))
-        param = self.get_parameters()[random_weight_index]
-        param.data += torch.randn(param.size()) * self.noise_amount
+
+        should_mutate = np.random.random() < 0.2
+
+        if should_mutate:
+            param = self.get_parameters()[random_weight_index]
+            param.data += torch.randn(param.size()) * self.noise_amount
 
     def crossover(self, other):
         for i, param in enumerate(self.get_parameters()):
