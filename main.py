@@ -63,7 +63,7 @@ if __name__ == "__main__":
         lidar_scans, _intersect_points = lidar.generate_scans(robot_pose, env.get_environment())
 
         # model.compile()
-        left_wheel, right_wheel = model.train(lidar_scans)
+        left_wheel, right_wheel = model.train(lidar_scans, mode=False)
         left_wheel = left_wheel.item()
         right_wheel = right_wheel.item()
         # print("left_wheel", left_wheel, "right_wheel", right_wheel)

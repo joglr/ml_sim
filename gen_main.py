@@ -126,7 +126,7 @@ if __name__ == "__main__":
 
 
 
-        for robot, model in robots_with_models:
+        for index, (robot, model) in enumerate(robots_with_models):
             total_reward = 0
 
             robot_pose = robot.predict(time_step)
@@ -148,8 +148,11 @@ if __name__ == "__main__":
             robot_scores[model] += reward
 
             if USE_VISUALIZATION:
-                lidar.draw(robot_pose, _intersect_points, screen)
-                robot.draw(screen)
+                # draw only the top 3 robots
+                if index < 4:
+                    lidar.draw(robot_pose, _intersect_points, screen)
+                    robot.draw(screen)
+                
         # lidar.draw(robots_with_models[0][0], _intersect_points, screen)
         # robots_with_models[0][0].draw(screen)
 
