@@ -126,6 +126,10 @@ if __name__ == "__main__":
             # robots_weighted_selection = np.random.choice(models, size=rest_robots, p=rank_weights)
 
             new_models = top_n_models
+
+            for model in new_models:
+                model.mutate()
+
             i = 0
             while i < rest_robots:
                 two_robots = np.random.choice(models, size=2, p=rank_weights)
@@ -152,6 +156,8 @@ if __name__ == "__main__":
 
         time_step = (current_time - last_time) / 1000
         last_time = current_time
+
+        print("FPS: ", 1/time_step)
 
         if USE_VISUALIZATION:
             screen.fill((0, 0, 0))
