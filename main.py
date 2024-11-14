@@ -22,7 +22,7 @@ env = Environment(WIDTH, HEIGHT)
 def create_robot_with_model(model: GenerativeModel = None):
     offsetX = 250
     offsetY = 100
-    return (DifferentialDriveRobot(WIDTH / 2 + offsetX, HEIGHT / 2 + offsetY, random.random() * 360), 
+    return (DifferentialDriveRobot(WIDTH / 2 + offsetX, HEIGHT / 2 + offsetY, random.random() * 360),
             model if model is not None else GenerativeModel(hidden_size=HIDDEN_LAYER_SIZE))
 
 robots_with_models = [create_robot_with_model() for _ in range(POPULATION_SIZE)]
@@ -81,34 +81,34 @@ if __name__ == "__main__":
         if (current_time - episode_start_time) >= EPISODE_DURATION:
             models = [mod for _, mod in robots_with_models]
             fitness_scores = [robot_scores[model] if model in robot_scores else 0 for robot, model in robots_with_models]
-            
+
             # Calculate mean, min, max fitness values
             mean_fitness = np.mean(fitness_scores)
             min_fitness = np.min(fitness_scores)
             max_fitness = np.max(fitness_scores)
-            
+
             # Update live plot data
             episodes.append(episode_count)
             mean_fitness_values.append(mean_fitness)
             min_fitness_values.append(min_fitness)
             max_fitness_values.append(max_fitness)
-            
+
             mean_line.set_xdata(episodes)
             mean_line.set_ydata(mean_fitness_values)
             min_line.set_xdata(episodes)
             min_line.set_ydata(min_fitness_values)
             max_line.set_xdata(episodes)
             max_line.set_ydata(max_fitness_values)
-            
+
             # Update trend line for the last 5 episodes
             update_trend_line()
-            
+
             # Rescale axes based on data
             ax.relim()
-            ax.autoscale_view()  
+            ax.autoscale_view()
             plt.draw()
             plt.pause(0.01)  # Pause to update the figure
-            
+
             episode_count += 1
             robot_scores = {}
             sorted_indices = np.argsort(fitness_scores)
@@ -123,14 +123,14 @@ if __name__ == "__main__":
             top_n_indices = sorted_indices[-TOP_N:]
             top_n_models = [models[i] for i in top_n_indices]
             rest_robots = POPULATION_SIZE - TOP_N
-            robots_weighted_selection = np.random.choice(models, size=rest_robots, p=rank_weights)
+            # robots_weighted_selection = np.random.choice(models, size=rest_robots, p=rank_weights)
 
             new_models = top_n_models
             i = 0
-            while i < rest_robots - 1:
-                j = i + 1
-                robot1_model = robots_weighted_selection[i]
-                robot2_model = robots_weighted_selection[j]
+            while i < rest_robots:
+                two_robots = np.random.choice(models, size=2, p=rank_weights)
+                robot1_model = two_robots[0]
+                robot2_model = two_robots[1]
 
                 new_robot_1 = robot1_model.crossover(robot2_model)
                 new_robot_2 = robot2_model.crossover(robot1_model)
