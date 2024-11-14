@@ -3,7 +3,7 @@ import pygame
 import math
 import random
 import numpy as np
-from constants import WHEEL_RADIUS, AXLE_LENGTH, NUM_BEAMS, IMG_PATH
+from constants import WHEEL_RADIUS, AXLE_LENGTH, BEAM_COUNT, IMG_PATH
 
 
 class DifferentialDriveRobot:
@@ -109,7 +109,7 @@ class DifferentialDriveRobot:
     #Exercise 6.2 make the robot avoid the walls using lidar sensor data
     def explore_environment(self, lidar_scans):
 
-        if len(lidar_scans) < NUM_BEAMS:
+        if len(lidar_scans) < BEAM_COUNT:
             print("no data from lidar yet")
             return
 

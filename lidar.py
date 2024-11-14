@@ -2,11 +2,11 @@ from shapely.geometry import Point, LineString
 import math
 import pygame
 import numpy as np
-from constants import NUM_BEAMS, BEAM_LENGTH
+from constants import BEAM_COUNT, BEAM_LENGTH
 
 class LidarSensor:
     def __init__(self):
-        self.num_beams = NUM_BEAMS
+        self.num_beams = BEAM_COUNT
         self.max_distance_cm = BEAM_LENGTH
 
     def generate_scans(self, robot_pose, obstacles):
@@ -100,7 +100,7 @@ class LidarSensor:
         y = robot_pose.y
         theta = robot_pose.theta
          # Draw the walls
-        num_rays = NUM_BEAMS  # Number of desired rays
+        num_rays = BEAM_COUNT  # Number of desired rays
         step_size = len(intersect_points) // num_rays  # Calculate the step size
 
         for i in range(0, len(intersect_points), step_size):

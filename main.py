@@ -9,7 +9,7 @@ from robot import DifferentialDriveRobot
 # from localisation import ParticleFilterLocalization
 # from landmarks import LandmarkHandler
 from ending import BoomAnimation
-from constants import BEAM_LENGTH, DRAW_LIDAR,DRAW_ROBOT, HEIGHT, MAX_WHEEL_SPEED, NUM_BEAMS, USE_VISUALIZATION, WIDTH
+from constants import BEAM_LENGTH, DRAW_LIDAR,DRAW_ROBOT, HEIGHT, MAX_WHEEL_SPEED, BEAM_COUNT, USE_VISUALIZATION, WIDTH
 
 # Initialize Pygame
 pygame.init()
@@ -23,7 +23,7 @@ robot = DifferentialDriveRobot(WIDTH/2, HEIGHT/2, 0,)
 # Create a Lidar sensor with 60 beams and a max distance of 500 units
 lidar = LidarSensor()
 
-model = GenerativeModel(hidden_size=4, beam_size=BEAM_LENGTH, beam_count=NUM_BEAMS)
+model = GenerativeModel(hidden_size=4, beam_size=BEAM_LENGTH, beam_count=BEAM_COUNT)
 
 #create landmarkhandler
 # landmark_handler = LandmarkHandler()

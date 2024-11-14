@@ -4,12 +4,12 @@ import numpy as np
 from torch import nn
 import matplotlib.pyplot as plt
 
-from constants import MAX_WHEEL_SPEED, NUM_BEAMS, BEAM_LENGTH
+from constants import MAX_WHEEL_SPEED, BEAM_COUNT, BEAM_LENGTH
 
 
 
 class GenerativeModel(nn.Module):
-    def __init__(self, hidden_size, beam_size=BEAM_LENGTH, beam_count=NUM_BEAMS, lr=100, noise_size=0.1):
+    def __init__(self, hidden_size, beam_size=BEAM_LENGTH, beam_count=BEAM_COUNT, lr=100, noise_size=0.01):
         super(GenerativeModel, self).__init__()
         self.data = []
         self.input_layer = nn.Linear(beam_count, hidden_size)
@@ -22,7 +22,6 @@ class GenerativeModel(nn.Module):
         self.max_beam_sum = beam_size * beam_count
         self.itters = 0
 
-
     def forward(self, x):
         inp = self.input_layer(torch.Tensor(x).float())
         act = torch.nn.functional.sigmoid(inp)
@@ -34,37 +33,37 @@ class GenerativeModel(nn.Module):
         norm = torch.nn.functional.sigmoid(out)
         return norm
 
-    def train(self, lidar_scans):
-        lidar_scans = np.array(lidar_scans) / self.BEAM_SIZE
-        out = self.forward(lidar_scans)
-        self.optimizer.zero_grad()
-        fitness = -self.fitness_fun(out, lidar_scans)
-        self.data.append(fitness.item())
-        # if self.itters > 200:
-        #     plt.plot(self.data)
-        #     plt.show()
-        fitness.backward()
-        self.optimizer.step()
-        self.itters += 1
-        return out
-    
+    # def train(self, lidar_scans):
+    #     lidar_scans = np.array(lidar_scans) / self.BEAM_SIZE
+    #     out = self.forward(lidar_scans)
+    #     self.optimizer.zero_grad()
+    #     fitness = -self.error(out, lidar_scans)
+    #     self.data.append(fitness.item())
+    #     # if self.itters > 200:
+    #     #     plt.plot(self.data)
+    #     #     plt.show()
+    #     fitness.backward()
+    #     self.optimizer.step()
+    #     self.itters += 1
+    #     return out
+
     def predict(self, lidar_scans):
         lidar_scans = np.array(lidar_scans) / self.BEAM_SIZE
         out = self.forward(lidar_scans)
         return out
 
-    def fitness_fun(self, out, lidar_scans):
-        wheel_velocity = out
-        left_wheel, right_wheel = wheel_velocity
+    # def error(self, out, lidar_scans):
+    #     wheel_velocity = out
+    #     left_wheel, right_wheel = wheel_velocity
 
-        # print("left", left_wheel)
-        # print("right", right_wheel)
-        λ = 1E-4
-        normalized_lidar_scans = (np.sum(lidar_scans) / self.max_beam_sum)
-        # print("scans", normalized_lidar_scans)
-        fitness = λ * (left_wheel + 1E-10) * (right_wheel + 1E-10) + normalized_lidar_scans
-        # print("fitness", fitness)
-        return fitness
+    #     # print("left", left_wheel)
+    #     # print("right", right_wheel)
+    #     λ = 1E-4
+    #     normalized_lidar_scans = (np.sum(lidar_scans) / self.max_beam_sum)
+    #     # print("scans", normalized_lidar_scans)
+    #     error = λ * (left_wheel + 1E-10) * (right_wheel + 1E-10) + normalized_lidar_scans
+    #     # print("fitness", fitness)
+    #     return error
 
     def get_parameters(self):
         return list(self.parameters())
