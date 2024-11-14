@@ -2,6 +2,7 @@ import math
 import pygame
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import linregress  # For trend line calculations
 from lidar import LidarSensor
 from environment import Environment
 from model import GenerativeModel
@@ -9,7 +10,6 @@ from robot import DifferentialDriveRobot
 from ending import BoomAnimation
 from constants import BEAM_LENGTH, DRAW_LIDAR, DRAW_ROBOT, EPISODE_DURATION, HEIGHT, HIDDEN_LAYER_SIZE, MAX_WHEEL_SPEED, BEAM_COUNT, POPULATION_SIZE, TOP_N, USE_VISUALIZATION, WIDTH
 import random
-
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -22,7 +22,7 @@ env = Environment(WIDTH, HEIGHT)
 def create_robot_with_model(model: GenerativeModel = None):
     offsetX = 250
     offsetY = 100
-    return (DifferentialDriveRobot(WIDTH / 2 + offsetX, HEIGHT / 2 + offsetY, random.random() * 360),
+    return (DifferentialDriveRobot(WIDTH / 2 + offsetX, HEIGHT / 2 + offsetY, random.random() * 360), 
             model if model is not None else GenerativeModel(hidden_size=HIDDEN_LAYER_SIZE))
 
 robots_with_models = [create_robot_with_model() for _ in range(POPULATION_SIZE)]
@@ -35,14 +35,19 @@ episode_start_time = pygame.time.get_ticks()  # Track the start time of each epi
 robot_scores = {}
 mean_fitness_history = {}  # Stores mean fitness over time for visualization
 
-# Initialize the mean fitness plot
+# Initialize the mean, min, max fitness plot
 plt.ion()  # Enable interactive mode for live-updating
 fig, ax = plt.subplots()
-ax.set_title("Mean Fitness Over Time")
+ax.set_title("Fitness Over Time")
 ax.set_xlabel("Episode")
-ax.set_ylabel("Mean Fitness")
-line, = ax.plot([], [], 'b-')  # Placeholder for mean fitness history
-episodes, mean_fitness_values = [], []  # Lists to store data for plotting
+ax.set_ylabel("Fitness")
+mean_line, = ax.plot([], [], 'b-', label="Mean Fitness")  # Mean fitness line
+min_line, = ax.plot([], [], 'g-', label="Min Fitness")    # Min fitness line
+max_line, = ax.plot([], [], 'r-', label="Max Fitness")    # Max fitness line
+trend_line, = ax.plot([], [], 'k--', label="5-episode Trend")  # Trend line for the last 5 episodes
+
+episodes, mean_fitness_values, min_fitness_values, max_fitness_values = [], [], [], []  # Lists to store data for plotting
+ax.legend()  # Show legend for lines
 
 def fitness_function(robot: DifferentialDriveRobot) -> float:
     rotations = robot.theta // (2 * math.pi)
@@ -53,6 +58,20 @@ def fitness_function(robot: DifferentialDriveRobot) -> float:
         return rotation_penalty - 50
     return rotation_penalty + 10
 
+def update_trend_line():
+    # Calculate trend line for the last 5 episodes if there are enough data points
+    if len(mean_fitness_values) >= 5:
+        recent_episodes = episodes[-5:]
+        recent_means = mean_fitness_values[-5:]
+        slope, intercept, _, _, _ = linregress(recent_episodes, recent_means)
+        trend_x = np.array([recent_episodes[0], recent_episodes[-1]])
+        trend_y = intercept + slope * trend_x
+        trend_line.set_xdata(trend_x)
+        trend_line.set_ydata(trend_y)
+    else:
+        trend_line.set_xdata([])
+        trend_line.set_ydata([])
+
 if __name__ == "__main__":
     running = True
     episode_count = 0  # Track episode count separately
@@ -62,19 +81,34 @@ if __name__ == "__main__":
         if (current_time - episode_start_time) >= EPISODE_DURATION:
             models = [mod for _, mod in robots_with_models]
             fitness_scores = [robot_scores[model] if model in robot_scores else 0 for robot, model in robots_with_models]
-            mean_fitness = int(np.mean(fitness_scores))
-            mean_fitness_history[episode_count] = mean_fitness  # Record mean fitness
-
+            
+            # Calculate mean, min, max fitness values
+            mean_fitness = np.mean(fitness_scores)
+            min_fitness = np.min(fitness_scores)
+            max_fitness = np.max(fitness_scores)
+            
             # Update live plot data
             episodes.append(episode_count)
             mean_fitness_values.append(mean_fitness)
-            line.set_xdata(episodes)
-            line.set_ydata(mean_fitness_values)
+            min_fitness_values.append(min_fitness)
+            max_fitness_values.append(max_fitness)
+            
+            mean_line.set_xdata(episodes)
+            mean_line.set_ydata(mean_fitness_values)
+            min_line.set_xdata(episodes)
+            min_line.set_ydata(min_fitness_values)
+            max_line.set_xdata(episodes)
+            max_line.set_ydata(max_fitness_values)
+            
+            # Update trend line for the last 5 episodes
+            update_trend_line()
+            
+            # Rescale axes based on data
             ax.relim()
-            ax.autoscale_view()  # Rescale axes based on data
+            ax.autoscale_view()  
             plt.draw()
             plt.pause(0.01)  # Pause to update the figure
-
+            
             episode_count += 1
             robot_scores = {}
             sorted_indices = np.argsort(fitness_scores)
