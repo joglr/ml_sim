@@ -13,7 +13,7 @@ class GenerativeModel(nn.Module):
         super(GenerativeModel, self).__init__()
         self.data = []
         self.input_layer = nn.Linear(beam_count, hidden_size)
-        self.hidden_layer = nn.Linear(hidden_size, hidden_size // 2)
+        # self.hidden_layer = nn.Linear(hidden_size, hidden_size // 2)
         self.output_layer = nn.Linear(hidden_size // 2, 2) # two motors
         self.BEAM_SIZE = beam_size
         self.BEAM_COUNT = beam_count

@@ -1,12 +1,16 @@
 import pygame
 #from sensors import CompassSensor  # Import the LidarSensor class
+import colorsys
 import math
 import random
 import numpy as np
 from constants import WHEEL_RADIUS, AXLE_LENGTH, BEAM_COUNT, IMG_PATH
 
+def hsv2rgb(h,s,v):
+    return tuple(round(i * 255) for i in colorsys.hsv_to_rgb(h,s,v))
 
 class DifferentialDriveRobot:
+    hue = 0
     def __init__(self, x, y, theta):
         self.x = x
         self.y = y
@@ -28,6 +32,8 @@ class DifferentialDriveRobot:
         self.compass = CompassSensor()
         self.odometry_weight = 0.0
         self.odometry_noise_level = 0.01
+        self.hue = DifferentialDriveRobot.hue
+        DifferentialDriveRobot.hue = (DifferentialDriveRobot.hue + 0.1) % 1
 
     def predict(self, delta_time):
         self.move(delta_time)
@@ -99,7 +105,8 @@ class DifferentialDriveRobot:
         pygame.draw.line(surface, (0, 255, 0), (left_wheel_x, left_wheel_y), (right_wheel_x, right_wheel_y), 3)
 
         # Draw the heading line
-        pygame.draw.line(surface, (255, 0, 0), (self.x, self.y), (heading_x, heading_y), 3)
+        # pygame.draw.line(surface, (255, 0, 0), (self.x, self.y), (heading_x, heading_y), 3)
+        pygame.draw.line(surface, hsv2rgb(self.hue, 1, 0.75), (self.x, self.y), (heading_x, heading_y), 3)
 
 
     def getMotorspeeds(self):
