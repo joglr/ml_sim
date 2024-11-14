@@ -127,8 +127,6 @@ if __name__ == "__main__":
 
             new_models = top_n_models
 
-            for model in new_models:
-                model.mutate()
 
             i = 0
             while i < rest_robots:
@@ -139,13 +137,15 @@ if __name__ == "__main__":
                 new_robot_1 = robot1_model.crossover(robot2_model)
                 new_robot_2 = robot2_model.crossover(robot1_model)
 
-                new_robot_1.mutate()
-                new_robot_2.mutate()
+
 
                 new_models.append(new_robot_1)
                 new_models.append(new_robot_2)
 
                 i += 2
+
+            for model in new_models:
+                model.mutate()
 
             robots_with_models = [create_robot_with_model(mod) for mod in new_models]
             episode_start_time = current_time
